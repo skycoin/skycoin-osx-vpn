@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>skycoin.nodetun</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>skycoin.nodetun</string>
+	<key>CFBundleVersion</key>
+	<string>2</string>
+	<key>SMAuthorizedClients</key>
+	<array>
+		<string>identifier &quot;skycoin.mesh&quot; and certificate leaf = H&quot;53370f045552898316d2dbf924ce4f78569d3378&quot;</string>
+	</array>
+</dict>
+</plist>
