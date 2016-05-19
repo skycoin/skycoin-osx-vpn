@@ -4,6 +4,8 @@
 
 #import "NodeTun.h"
 
+#import <Foundation/Foundation.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -57,10 +59,36 @@ int open_utun();
 
 - (void)configureInterface:(NSString *)interface localAddress:(NSString *)localIP remoteAddress:(NSString *)remoteIP subnetMask:(NSString *)subnetMask withReply:(void(^)(int status))reply {
     NSArray *args = @[interface, @"inet", localIP, remoteIP, @"netmask", subnetMask];
+    NSLog(@"/sbin/ifconfig %@", args);
     
     NSTask *task = [NSTask launchedTaskWithLaunchPath:@"/sbin/ifconfig" arguments:args];
+    [task waitUntilExit];
     
-    [task launch];
+    reply([task terminationStatus]);
+}
+
+- (void)addDefaultRoute:(NSString *)interface remoteAddress:(NSString *)remoteIP withReply:(void(^)(int status))reply {
+    NSArray *args = @[@"-n", @"add", @"default", @"-ifscope", interface, remoteIP];
+    NSLog(@"/sbin/route %@", args);
+    
+    NSTask *task = [NSTask launchedTaskWithLaunchPath:@"/sbin/route" arguments:args];
+    [task waitUntilExit];
+    
+    if([task terminationStatus] == 0) {
+        args = @[@"-n", @"add", @"0/1", remoteIP];
+        NSLog(@"/sbin/route %@", args);
+    }
+    
+    task = [NSTask launchedTaskWithLaunchPath:@"/sbin/route" arguments:args];
+    [task waitUntilExit];
+    
+    reply([task terminationStatus]);
+}
+
+- (void)uninstallWithReply:(void(^)(int status))reply {
+    NSArray *args = @[@"-f", @"/Library/PrivilegedHelperTools/skycoin.nodetun", @"/Library/LaunchDaemons/skycoin.nodetun.plist"];
+    NSTask *task = [NSTask launchedTaskWithLaunchPath:@"/bin/rm" arguments:args];
+    
     [task waitUntilExit];
     
     reply([task terminationStatus]);
