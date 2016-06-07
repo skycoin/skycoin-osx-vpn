@@ -12,6 +12,9 @@
 #import "DataReceivedMessage.h"
 #import "ConfigURLMessage.h"
 #import "RoutesChangedMessage.h"
+#import "EstablishedRouteMessage.h"
+#import "EstablishedRouteErrorMessage.h"
+#import "EstablishingRouteMessage.h"
 
 #include <ServiceManagement/ServiceManagement.h>
 
@@ -77,11 +80,36 @@
                     NSMenuItem *item = [_routesMenu addItemWithTitle:name action:@selector(connectRoute:) keyEquivalent:@""];
                     item.target = self;
                     item.tag = [menuRouteIDs count];
+                    item.image = [NSImage imageNamed:@"yellow"];
                     [menuRouteIDs addObject:routeID];
                 }];
                 
                 _routeIDsToNames = routesMessage.routeIDsToNames;
                 _menuRouteIDs = menuRouteIDs;
+            }
+        } else if([message isKindOfClass:[EstablishingRouteMessage class]]) {
+            EstablishingRouteMessage *routeMessage = (EstablishingRouteMessage *)message;
+            
+            for(NSUInteger i = 0; i < _menuRouteIDs.count; i++) {
+                if([[_menuRouteIDs objectAtIndex:i] isEqualToString:routeMessage.routeID]) {
+                    [[_routesMenu itemAtIndex:i] setImage:[NSImage imageNamed:@"yellow"]];
+                }
+            }
+        } else if([message isKindOfClass:[EstablishedRouteMessage class]]) {
+            EstablishedRouteMessage *routeMessage = (EstablishedRouteMessage *)message;
+            
+            for(NSUInteger i = 0; i < _menuRouteIDs.count; i++) {
+                if([[_menuRouteIDs objectAtIndex:i] isEqualToString:routeMessage.routeID]) {
+                    [[_routesMenu itemAtIndex:i] setImage:[NSImage imageNamed:@"green"]];
+                }
+            }
+        } else if([message isKindOfClass:[EstablishedRouteErrorMessage class]]) {
+            EstablishedRouteErrorMessage *routeErrorMessage = (EstablishedRouteErrorMessage *)message;
+            
+            for(NSUInteger i = 0; i < _menuRouteIDs.count; i++) {
+                if([[_menuRouteIDs objectAtIndex:i] isEqualToString:routeErrorMessage.routeID]) {
+                    [[_routesMenu itemAtIndex:i] setImage:[NSImage imageNamed:@"red"]];
+                }
             }
         }
     };
